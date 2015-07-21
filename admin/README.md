@@ -19,8 +19,8 @@ To configure tag driven releases from Travis CI.
      Edit `.travis.yml` as prompted.
   4. Edit `.travis.yml` to use `./admin/build.sh` as the build script,
      and edit that script to use the tasks required for this project.
-  5. Edit `build.sbt` to select which JDK will be used for publishing
-     for which Scala versions.
+  5. Edit `build.sbt` and `travis.yml` to select which JDK will be used
+     for publishing for which Scala versions.
 
 It is important to add comments in .travis.yml to identify the name
 of each environment variable encoded in a `:secure` section.

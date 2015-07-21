@@ -5,6 +5,7 @@ language: scala
 
 env:
   global:
+    - PUBLISH_JDK="openjdk6,oraclejdk8"
     # PGP_PASSPHRASE
     - secure: "XLe/gZXrGwJlKCgAUoEUIHwoh8js0IdlIazwUd5KKssZMQkPg4VfC5LLPl8iXCYIRe2JrgmD56b7eseiZF9kMxa1Rsz8fSMY0v3A0qwxRjbsxVQ2NqEvdq+TNOAhjo/OmPnipvTcDdAyq68Ca4nTSBtfBpy5t6X3Z4UIl8CWLdw="
     # SONA_USER

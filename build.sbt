@@ -7,15 +7,48 @@ name                       := "scala-partest"
 version                    := "1.0.9-SNAPSHOT"
 
 scalaVersion               := crossScalaVersions.value.head
-
 crossScalaVersions         := {
-  val java = System.getProperty("java.version")
-  if (java.startsWith("1.6."))
-    Seq("2.11.6", "2.12.0-M1")
-  else if (java.startsWith("1.8."))
-    Seq("2.12.0-M2")
-  else
-    sys.error(s"don't know what Scala versions to build on $java")
+  val allCrossVersions = Seq("2.11.6", "2.12.0-M1", "2.12.0-M2")
+
+  val MajDotMinDot = """(\d+)\.(\d+)\..*""".r
+
+  def needsJava8(scalaVersion: String) = {
+    val MajDotMinDot(major, minor) = scalaVersion
+    major.toInt == 2 && minor.toInt >= 12 || major.toInt > 2
+  }
+
+  object javaVersion {
+    override val toString = System.getProperty("java.version")
+    private val (javaMajor, javaMinor) = {
+      val MajDotMinDot(major, minor) = toString
+      (major.toInt, minor.toInt)
+    }
+    def isExactly(minor: Int): Boolean = javaMajor == 1 && javaMinor == minor
+    def isAtLeast(minor: Int): Boolean = javaMajor == 1 && javaMinor >= minor || javaMajor > 1 // haha
+  }
+
+  def publishVersions: Seq[String] = {
+    if (javaVersion.isExactly(6))
+      allCrossVersions.filterNot(needsJava8)
+    else if (javaVersion.isExactly(8))
+      allCrossVersions.filter(needsJava8)
+    else
+      sys.error(s"don't know what Scala versions to build on $javaVersion")
+  }
+
+  def testVersions: Seq[String] = {
+    if (javaVersion.isAtLeast(8))
+      allCrossVersions
+    else
+      allCrossVersions.filterNot(needsJava8)
+  }
+
+  val allowAnyJVM = util.Properties.propIsSet("sbt.allowCrossBuildingAnyJVM")
+  if (allowAnyJVM) {
+    testVersions
+  } else {
+    publishVersions
+  }
 }
 
 scalaXmlVersion            := "1.0.4"
